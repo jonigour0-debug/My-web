@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JONI Animation</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(circle, #15154b, #02020c 75%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
+
+.scene {
+  text-align: center;
+  perspective: 800px;
+}
+
+h1 {
+  font-size: clamp(65px, 18vw, 150px);
+  font-weight: 1000;
+  letter-spacing: 15px;
+  color: #fff;
+  text-shadow:
+    0 0 10px #00eaff,
+    0 0 30px #00bfff,
+    0 0 70px #7b2cff,
+    0 0 120px #7b2cff;
+  animation: intro 3s ease-in-out infinite alternate,
+             glow 2s infinite alternate;
+}
+
+.subtitle {
+  color: #00eaff;
+  letter-spacing: 12px;
+  font-size: 16px;
+  margin-top: 20px;
+  animation: fade 3s infinite alternate;
+}
+
+@keyframes intro {
+  from { transform: rotateY(-15deg) scale(.8); }
+  to { transform: rotateY(15deg) scale(1.1); }
+}
+
+@keyframes glow {
+  from { filter: brightness(.8); }
+  to { filter: brightness(1.5); }
+}
+
+@keyframes fade {
+  from { opacity: .3; letter-spacing: 5px; }
+  to { opacity: 1; letter-spacing: 12px; }
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #00eaff;
+  box-shadow: 0 0 15px #00eaff;
+  animation: float 6s linear infinite;
+}
+
+@keyframes float {
+  from {
+    transform: translateY(110vh);
+    opacity: 0;
+  }
+  20% { opacity: 1; }
+  to {
+    transform: translateY(-10vh);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+  <h1>JONI</h1>
+  <div class="subtitle">THE FUTURE IS MINE</div>
+</div>
+
+<script>
+for(let i = 0; i < 70; i++) {
+  let p = document.createElement("div");
+  p.className = "particle";
+  p.style.left = Math.random() * 100 + "vw";
+  p.style.animationDelay = Math.random() * 6 + "s";
+  p.style.animationDuration = (3 + Math.random() * 6) + "s";
+  document.body.appendChild(p);
+}
+</script>
+
+</body>
+  </html>
+  
