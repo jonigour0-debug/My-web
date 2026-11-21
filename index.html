@@ -1,10 +1,11 @@
 
+  
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JONI Animation</title>
+<title>JONI Cartoon World</title>
 
 <style>
 * {
@@ -16,7 +17,7 @@
 body {
   height: 100vh;
   overflow: hidden;
-  background: radial-gradient(circle, #15154b, #02020c 75%);
+  background: radial-gradient(circle, #25105c, #030313);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,70 +27,85 @@ body {
 .scene {
   text-align: center;
   perspective: 800px;
+  z-index: 2;
 }
 
 h1 {
   font-size: clamp(65px, 18vw, 150px);
-  font-weight: 1000;
-  letter-spacing: 15px;
-  color: #fff;
-  text-shadow:
-    0 0 10px #00eaff,
-    0 0 30px #00bfff,
-    0 0 70px #7b2cff,
-    0 0 120px #7b2cff;
-  animation: intro 3s ease-in-out infinite alternate,
-             glow 2s infinite alternate;
+  color: white;
+  letter-spacing: 12px;
+  text-shadow: 0 0 15px cyan,
+               0 0 40px blue,
+               0 0 80px purple;
+  animation: rotate 3s infinite alternate;
 }
 
 .subtitle {
-  color: #00eaff;
-  letter-spacing: 12px;
-  font-size: 16px;
-  margin-top: 20px;
-  animation: fade 3s infinite alternate;
+  color: cyan;
+  letter-spacing: 8px;
+  margin-top: 15px;
 }
 
-@keyframes intro {
-  from { transform: rotateY(-15deg) scale(.8); }
+@keyframes rotate {
+  from { transform: rotateY(-15deg) scale(.9); }
   to { transform: rotateY(15deg) scale(1.1); }
 }
 
-@keyframes glow {
-  from { filter: brightness(.8); }
-  to { filter: brightness(1.5); }
+/* Floating cartoons */
+
+.sticker {
+  position: absolute;
+  font-size: clamp(35px, 8vw, 65px);
+  animation: float 5s ease-in-out infinite;
+  z-index: 1;
+  filter: drop-shadow(0 0 12px #a855f7);
 }
 
-@keyframes fade {
-  from { opacity: .3; letter-spacing: 5px; }
-  to { opacity: 1; letter-spacing: 12px; }
+.s1 { top: 10%; left: 10%; animation-delay: 0s; }
+.s2 { top: 20%; right: 12%; animation-delay: 1s; }
+.s3 { bottom: 15%; left: 15%; animation-delay: 2s; }
+.s4 { bottom: 12%; right: 15%; animation-delay: 1.5s; }
+.s5 { top: 48%; left: 5%; animation-delay: 2.5s; }
+.s6 { top: 45%; right: 5%; animation-delay: 3s; }
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(-10deg) scale(1);
+  }
+  50% {
+    transform: translateY(-45px) rotate(15deg) scale(1.2);
+  }
 }
+
+/* Sparkles */
 
 .particle {
   position: absolute;
   width: 4px;
   height: 4px;
+  background: cyan;
   border-radius: 50%;
-  background: #00eaff;
-  box-shadow: 0 0 15px #00eaff;
-  animation: float 6s linear infinite;
+  box-shadow: 0 0 12px cyan;
+  animation: rise 6s linear infinite;
 }
 
-@keyframes float {
-  from {
-    transform: translateY(110vh);
-    opacity: 0;
-  }
+@keyframes rise {
+  from { transform: translateY(100vh); opacity: 0; }
   20% { opacity: 1; }
-  to {
-    transform: translateY(-10vh);
-    opacity: 0;
-  }
+  to { transform: translateY(-10vh); opacity: 0; }
 }
 </style>
 </head>
 
 <body>
+
+<!-- Cartoon stickers -->
+<div class="sticker s1">🐼</div>
+<div class="sticker s2">🦊</div>
+<div class="sticker s3">🐸</div>
+<div class="sticker s4">🐱</div>
+<div class="sticker s5">🚀</div>
+<div class="sticker s6">👻</div>
 
 <div class="scene">
   <h1>JONI</h1>
@@ -98,7 +114,7 @@ h1 {
 
 <script>
 for(let i = 0; i < 70; i++) {
-  let p = document.createElement("div");
+  const p = document.createElement("div");
   p.className = "particle";
   p.style.left = Math.random() * 100 + "vw";
   p.style.animationDelay = Math.random() * 6 + "s";
@@ -108,5 +124,4 @@ for(let i = 0; i < 70; i++) {
 </script>
 
 </body>
-  </html>
-  
+</html>
