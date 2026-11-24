@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art Studio - Graphic & Traditional</title>
+  <style>
+    :root {
+      --bg: #1f2430;
+      --panel: #2b3242;
+      --panel-2: #343d52;
+      --text: #eef3ff;
+      --muted: #a9b4cc;
+      --accent: #6aa9ff;
+      --border: #45506a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 10px 16px;
+      background: #181c26;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    header h1 { margin: 0; font-size: 18px; font-weight: 600; }
+    header .sub { color: var(--muted); font-size: 13px; }
+    .app {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 0;
+    }
+    .toolbar {
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 12px;
+      overflow: auto;
+    }
+    .section {
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section:last-child { border-bottom: none; }
+    .section h2 {
+      font-size: 13px;
+      margin: 0 0 8px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+    label { font-size: 13px; color: var(--muted); }
+    select, input[type="number"], button {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 8px;
+      font-size: 13px;
+    }
+    select, input[type="number"] { width: 100%; }
+    input[type="range"] { width: 100%; }
+    input[type="color"] {
+      width: 44px; height: 34px; padding: 2px;
+      background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;
+    }
+    button { cursor: pointer; transition: background 0.15s; }
+    button:hover { background: #3d4862; }
+    button.primary { background: #2f6fed; border-color: #2f6fed; }
+    button.primary:hover { background: #3b7cff; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .hint { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
+    .workspace {
+      position: relative;
+      overflow: auto;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      background:
+        linear-gradient(45deg, #2a3140 25%, transparent 25%),
+        linear-gradient(-45deg, #2a3140 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #2a3140 75%),
+        linear-gradient(-45deg, transparent 75%, #2a3140 75%);
+      background-size: 24px 24px;
+      background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+      background-color: #242b38;
+    }
+    .canvas-wrap {
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      border: 1px solid #cfd6e4;
+    }
+    canvas { display: block; cursor: crosshair; touch-action: none; }
+    .status {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 6px 16px;
+      border-top: 1px solid var(--border);
+      background: #181c26;
+    }
+    .inline { display: flex; align-items: center; gap: 8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Art Studio</h1>
+    <div class="sub">Create graphic art and traditional-style paintings in your browser</div>
+  </header>
+
+  <div class="app">
+    <aside class="toolbar">
+      <div class="section">
+        <h2>Tool / Style</h2>
+        <label for="tool">Brush or tool</label>
+        <select id="tool">
+          <option value="brush">Brush (Graphic)</option>
+          <option value="pencil">Pencil (Traditional)</option>
+          <option value="ink">Ink Brush (Traditional)</option>
+          <option value="watercolor">Watercolor (Traditional)</option>
+          <option value="oil">Oil Paint (Traditional)</option>
+          <option value="marker">Marker (Graphic)</option>
+          <option value="eraser">Eraser</option>
+          <option value="line">Line</option>
+          <option value="rect">Rectangle</option>
+          <option value="circle">Circle</option>
+        </select>
+        <p class="hint">Use traditional media for sketch/paint looks, or graphic tools for clean design.</p>
+      </div>
+
+      <div class="section">
+        <h2>Color &amp; Stroke</h2>
+        <div class="row inline">
+          <label for="color">Color</label>
+          <input type="color" id="color" value="#1a1a1a">
+        </div>
+        <label for="size">Size: <span id="sizeVal">8</span> px</label>
+        <input type="range" id="size" min="1" max="80" value="8">
+        <label for="opacity">Opacity: <span id="opacityVal">100</span>%</label>
+        <input type="range" id="opacity" min="5" max="100" value="100">
+        <div class="row" style="margin-top:8px;">
+          <label><input type="checkbox" id="fillShape"> Fill shapes</label>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Canvas</h2>
+        <label for="paper">Paper / background</label>
+        <select id="paper">
+          <option value="white">White paper</option>
+          <option value="warm">Warm paper (traditional)</option>
+          <option value="dark">Dark canvas</option>
+          <option value="transparent">Transparent</option>
+        </select>
+        <div class="grid2" style="margin-top:8px;">
+          <button id="applyPaper">Apply paper</button>
+          <button id="clear">Clear</button>
+        </div>
+        <p class="hint">Applying paper resets the background. Use Import to draw over a photo.</p>
+      </div>
+
+      <div class="section">
+        <h2>Actions</h2>
+        <div class="grid2">
+          <button id="undo">Undo</button>
+          <button id="redo">Redo</button>
+          <button id="save" class="primary">Save PNG</button>
+          <button id="importBtn">Import image</button>
+        </div>
+        <input type="file" id="importFile" accept="image/*" style="display:none">
+      </div>
+
+      <div class="section">
+        <h2>Tips</h2>
+        <p class="hint">Watercolor/Oil: lower opacity and layer strokes for traditional effects. Pencil/Ink: sketch and line art. Brush/Marker/Shapes: graphic art.</p>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="canvas" width="1000" height="700"></canvas>
+      </div>
+    </main>
+  </div>
+
+  <div class="status" id="status">Ready. Select a tool and draw on the canvas.</div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const toolEl = document.getElementById('tool');
+    const colorEl = document.getElementById('color');
+    const sizeEl = document.getElementById('size');
+    const sizeVal = document.getElementById('sizeVal');
+    const opacityEl = document.getElementById('opacity');
+    const opacityVal = document.getElementById('opacityVal');
+    const fillShapeEl = document.getElementById('fillShape');
+    const paperEl = document.getElementById('paper');
+    const statusEl = document.getElementById('status');
+
+    let drawing = false;
+    let startX = 0, startY = 0;
+    let lastX = 0, lastY = 0;
+    let snapshot = null;
+    let history = [];
+    let redoStack = [];
+    const HISTORY_LIMIT = 40;
+
+    function setStatus(msg) { statusEl.textContent = msg; }
+
+    function pushHistory() {
+      try {
+        history.push(canvas.toDataURL());
+        if (history.length > HISTORY_LIMIT) history.shift();
+        redoStack = [];
+      } catch (e) { /* ignore */ }
+    }
+
+    function restoreFrom(dataUrl, cb) {
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        if (cb) cb();
+      };
+      img.src = dataUrl;
+    }
+
+    function getPaperFill() {
+      const p = paperEl.value;
+      if (p === 'white') return '#ffffff';
+      if (p === 'warm') return '#f4ecd8';
+      if (p === 'dark') return '#1e1e22';
+      return null;
+    }
+
+    function drawWarmGrain() {
+      ctx.save();
+      ctx.globalAlpha = 0.04;
+      for (let i = 0; i < 1200; i++) {
+        ctx.fillStyle = Math.random() > 0.5 ? '#8a7a5a' : '#ffffff';
+        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
+      }
+      ctx.restore();
+    }
+
+    function applyPaper(resetHistory) {
+      const fill = getPaperFill();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (fill) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = fill;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+      }
+      if (paperEl.value === 'warm') drawWarmGrain();
+      if (resetHistory) {
+        history = [];
+        redoStack = [];
+        pushHistory();
+      }
+    }
+
+    function hexToRgba(hex, alpha) {
+      const h = hex.replace('#', '');
+      const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+      const n = parseInt(full, 16);
+      const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function getToolSettings() {
+      const tool = toolEl.value;
+      const baseColor = colorEl.value;
+      const size = parseInt(sizeEl.value, 10);
+      const userOpacity = parseInt(opacityEl.value, 10) / 100;
+
+      let strokeStyle = baseColor;
+      let lineWidth = size;
+      let globalAlpha = userOpacity;
+      let lineCap = 'round';
+      let lineJoin = 'round';
+      let shadowBlur = 0;
+      let shadowColor = 'transparent';
+      let composite = 'source-over';
+
+      if (tool === 'pencil') {
+        lineWidth = Math.max(1, size * 0.35);
+        globalAlpha = Math.min(1, userOpacity * 0.85);
+        strokeStyle = hexToRgba(baseColor, 0.9);
+      } else if (tool === 'ink') {
+        lineWidth = Math.max(1, size * 0.7);
+        globalAlpha = userOpacity;
+      } else if (tool === 'watercolor') {
+        lineWidth = size * 1.8;
+        globalAlpha = Math.min(1, userOpacity * 0.18);
+        shadowBlur = size * 0.8;
+        shadowColor = hexToRgba(baseColor, 0.25);
+        strokeStyle = hexToRgba(baseColor, 0.35);
+      } else if (tool === 'oil') {
+        lineWidth = size * 1.1;
+        globalAlpha = Math.min(1, userOpacity * 0.55);
+        shadowBlur = Math.max(0, size * 0.15);
+        shadowColor = hexToRgba(baseColor, 0.25);
+        strokeStyle = hexToRgba(baseColor, 0.85);
+      } else if (tool === 'marker') {
+        lineWidth = size * 1.4;
+        globalAlpha = Math.min(1, userOpacity * 0.45);
+        lineCap = 'square';
+      } else if (tool === 'eraser') {
+        composite = 'destination-out';
+        globalAlpha = 1;
+        lineWidth = size * 1.4;
+        strokeStyle = 'rgba(0,0,0,1)';
+      }
+
+      return { tool, strokeStyle, baseColor, lineWidth, globalAlpha, lineCap, lineJoin, shadowBlur, shadowColor, composite };
+    }
+
+    function isShapeTool(tool) {
+      return tool === 'line' || tool === 'rect' || tool === 'circle';
+    }
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const src = e.touches ? e.touches[0] : (e.changedTouches ? e.changedTouches[0] : e);
+      return {
+        x: (src.clientX - rect.left) * (canvas.width / rect.width),
+        y: (src.clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function drawDot(x, y, s) {
+      ctx.save();
+      ctx.globalCompositeOperation = s.composite;
+      ctx.globalAlpha = s.globalAlpha;
+      ctx.fillStyle = s.tool === 'eraser' ? 'rgba(0,0,0,1)' : s.strokeStyle;
+      ctx.shadowBlur = s.shadowBlur;
+      ctx.shadowColor = s.shadowColor;
+      ctx.beginPath();
+      ctx.arc(x, y, s.lineWidth / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function beginStroke(e) {
+      e.preventDefault();
+      const pos = getPos(e);
+      drawing = true;
+      startX = lastX = pos.x;
+      startY = lastY = pos.y;
+      const s = getToolSettings();
+
+      if (isShapeTool(s.tool)) {
+        snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        drawDot(pos.x, pos.y, s);
+        setStatus('Drawing with ' + s.tool + '...');
+      }
+    }
+
+    function moveStroke(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      const s = getToolSettings();
+
+      if (isShapeTool(s.tool)) {
+        ctx.putImageData(snapshot, 0, 0);
+        drawShape(startX, startY, pos.x, pos.y, s);
+      } else {
+        ctx.globalCompositeOperation = s.composite;
+        ctx.strokeStyle = s.strokeStyle;
+        ctx.lineWidth = s.lineWidth;
+        ctx.globalAlpha = s.globalAlpha;
+        ctx.lineCap = s.lineCap;
+        ctx.lineJoin = s.lineJoin;
+        ctx.shadowBlur = s.shadowBlur;
+        ctx.shadowColor = s.shadowColor;
+
+        if (s.tool === 'watercolor') {
+          ctx.lineWidth = s.lineWidth * (0.85 + Math.random() * 0.3);
+          ctx.lineTo(pos.x, pos.y);
+          ctx.stroke();
+        } else if (s.tool === 'oil' || s.tool === 'pencil') {
+          const jitter = s.tool === 'oil' ? 0.6 : 0.4;
+          const jx = (Math.random() - 0.5) * jitter;
+          const jy = (Math.random() - 0.5) * jitter;
+          ctx.lineTo(pos.x + jx, pos.y + jy);
+          ctx.stroke();
+        } else {
+          ctx.lineTo(pos.x, pos.y);
+          ctx.stroke();
+        }
+      }
+      lastX = pos.x; lastY = pos.y;
+    }
+
+    function drawShape(x1, y1, x2, y2, s) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = parseInt(opacityEl.value, 10) / 100;
+      ctx.strokeStyle = s.baseColor;
+      ctx.fillStyle = s.baseColor;
+      ctx.lineWidth = Math.max(1, parseInt(sizeEl.value, 10));
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      if (s.tool === 'line') {
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      } else if (s.tool === 'rect') {
+        const w = x2 - x1, h = y2 - y1;
+        if (fillShapeEl.checked) ctx.fillRect(x1, y1, w, h);
+        ctx.strokeRect(x1, y1, w, h);
+      } else if (s.tool === 'circle') {
+        const rx = (x2 - x1) / 2, ry = (y2 - y1) / 2;
+        ctx.beginPath();
+        ctx.ellipse(x1 + rx, y1 + ry, Math.abs(rx), Math.abs(ry), 0, 0, Math.PI * 2);
+        if (fillShapeEl.checked) ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function endStroke(e) {
+      if (!drawing) return;
+      if (e) e.preventDefault();
+      const s = getToolSettings();
+      if (isShapeTool(s.tool)) {
+        const pos = e ? getPos(e) : { x: lastX, y: lastY };
+        ctx.putImageData(snapshot, 0, 0);
+        drawShape(startX, startY, pos.x, pos.y, s);
+        snapshot = null;
+      } else {
+        ctx.closePath();
+        ctx.restore();
+      }
+      drawing = false;
+      pushHistory();
+      setStatus('Ready.');
+    }
+
+    canvas.addEventListener('mousedown', beginStroke);
+    canvas.addEventListener('mousemove', moveStroke);
+    window.addEventListener('mouseup', endStroke);
+    canvas.addEventListener('mouseleave', () => { if (drawing && !isShapeTool(toolEl.value)) endStroke(); });
+
+    canvas.addEventListener('touchstart', beginStroke, { passive: false });
+    canvas.addEventListener('touchmove', moveStroke, { passive: false });
+    canvas.addEventListener('touchend', endStroke, { passive: false });
+    canvas.addEventListener('touchcancel', endStroke, { passive: false });
+
+    sizeEl.addEventListener('input', () => sizeVal.textContent = sizeEl.value);
+    opacityEl.addEventListener('input', () => opacityVal.textContent = opacityEl.value);
+
+    document.getElementById('undo').addEventListener('click', () => {
+      if (history.length <= 1) { setStatus('Nothing to undo.'); return; }
+      const current = history.pop();
+      redoStack.push(current);
+      restoreFrom(history[history.length - 1], () => setStatus('Undone.'));
+    });
+
+    document.getElementById('redo').addEventListener('click', () => {
+      if (redoStack.length === 0) { setStatus('Nothing to redo.'); return; }
+      const next = redoStack.pop();
+      history.push(next);
+      restoreFrom(next, () => setStatus('Redone.'));
+    });
+
+    document.getElementById('clear').addEventListener('click', () => {
+      applyPaper(false);
+      pushHistory();
+      setStatus('Canvas cleared.');
+    });
+
+    document.getElementById('applyPaper').addEventListener('click', () => {
+      applyPaper(true);
+      setStatus('Paper/background applied.');
+    });
+
+    document.getElementById('save').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'artwork.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      setStatus('Image saved as artwork.png.');
+    });
+
+    const importBtn = document.getElementById('importBtn');
+    const importFile = document.getElementById('importFile');
+    importBtn.addEventListener('click', () => importFile.click());
+    importFile.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(canvas.width / img.width, canvas.height / img.height, 1);
+          const w = img.width * scale, h = img.height * scale;
+          const x = (canvas.width - w) / 2, y = (canvas.height - h) / 2;
+          ctx.drawImage(img, x, y, w, h);
+          pushHistory();
+          setStatus('Image imported. You can draw over it.');
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+      importFile.value = '';
+    });
+
+    toolEl.addEventListener('change', () => setStatus('Tool: ' + toolEl.options[toolEl.selectedIndex].text));
+
+    applyPaper(true);
+    setStatus('Ready. Choose a graphic or traditional tool and start creating.');
+  </script>
+</body>
+</html>
